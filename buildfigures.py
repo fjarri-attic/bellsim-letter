@@ -522,7 +522,7 @@ def buildGHZDecoherence():
 if __name__ == '__main__':
 
     with plot_params(**P_GLOBAL):
-        #buildGHZDistributions()
-        #buildCooperative()
-        #buildGHZCorrelations()
+        buildGHZDistributions()
+        buildCooperative()
+        buildGHZCorrelations()
         buildGHZDecoherence()
