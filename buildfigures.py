@@ -511,8 +511,8 @@ def buildGHZDecoherence():
 
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 1)
-        ax.set_xlabel('$t$')
-        ax.set_ylabel('$F(t)/F(0)$')
+        ax.set_xlabel('$\\tau$')
+        ax.set_ylabel('$F(\\tau)/F(0)$')
 
         fig.tight_layout(pad=0.3)
         fig.savefig('figures/ghz_decoherence.eps')
