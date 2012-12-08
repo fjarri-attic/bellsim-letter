@@ -371,24 +371,24 @@ def buildGHZCorrelations():
         ax1.set_ylabel('$\\langle F \\rangle / \\langle F \\rangle_{\\mathrm{QM}}$')
 
         representation = 'Q'
-        violations = filter_data(data['violations'], representation=representation, size=10**8)
+        violations = filter_data(data['violations'], representation=representation, size=10**9)
 
-        ns = violations['ns'][:50]
-        qms = violations['qms'][:50]
-        mean = violations['mean'][:50] / qms
-        err = violations['error'][:50] / qms
+        ns = violations['ns']
+        qms = violations['qms']
+        mean = violations['mean'] / qms
+        err = violations['error'] / qms
 
-        cl_ns = numpy.arange(1, 51)
+        cl_ns = numpy.arange(1, 61)
         cl_qm = [getF_analytical(n, 'F_ardehali' if n % 2 == 0 else 'F_mermin') for n in cl_ns]
         cl_qm = numpy.array(zip(*cl_qm)[0]) / numpy.array(zip(*cl_qm)[1])
 
         ax1.set_xlim((0, 10.5))
-        ax1.set_ylim((-0.05, 1.2))
-        ax2.set_xlim((39.5, 51))
-        ax2.set_ylim((-0.05, 1.2))
+        ax1.set_ylim((-0.05, 1.6))
+        ax2.set_xlim((49.5, 61))
+        ax2.set_ylim((-0.05, 1.6))
 
         for ax in (ax1, ax2):
-            ax.plot(cl_ns, numpy.ones(50), color='grey', linewidth=0.75,
+            ax.plot(cl_ns, numpy.ones(60), color='grey', linewidth=0.75,
                 linestyle='--', dashes=dashes('--'))
             ax.errorbar(ns, mean, yerr=err, color=color_dblue, linestyle='None')
             ax.plot(cl_ns, cl_qm, color=color_dred, linestyle='-.', dashes=dashes('-.'))
@@ -413,48 +413,46 @@ def buildGHZCorrelations():
         ax1.plot((1-d,1+d),(1-d,1+d), **kwargs)
         ax1.plot((1-d,1+d),(-d,+d), **kwargs)
 
-        xs = numpy.linspace(8, 10)
-        ax1.plot(xs, [0.25] * xs.size, color=color_dred, linestyle='-.', dashes=dashes('-.'))
-        ax1.plot(xs, [0.45] * xs.size, color='grey', linewidth=0.75,
+        xs = numpy.linspace(8.5, 10.5)
+        ax1.plot(xs, [0.2] * xs.size, color=color_dred, linestyle='-.', dashes=dashes('-.'))
+        ax1.plot(xs, [0.4] * xs.size, color='grey', linewidth=0.75,
                 linestyle='--', dashes=dashes('--'))
-        ax1.errorbar([9], [0.65], yerr=[0.05], color=color_dblue, linestyle='None')
+        ax1.errorbar([9], [0.6], yerr=[0.05], color=color_dblue, linestyle='None')
 
-        ax2.text(40, 0.6, "SU(2)-Q\nsampling", fontsize=P_GLOBAL['font.size']-1)
-        ax2.text(40, 0.4, "QM prediction", fontsize=P_GLOBAL['font.size']-1)
-        ax2.text(40, 0.2, "LHV prediction", fontsize=P_GLOBAL['font.size']-1)
-
-
+        ax2.text(49.5, 0.55, "SU(2)-Q", fontsize=P_GLOBAL['font.size']-1)
+        ax2.text(49.5, 0.35, "QM", fontsize=P_GLOBAL['font.size']-1)
+        ax2.text(49.5, 0.15, "LHV", fontsize=P_GLOBAL['font.size']-1)
 
         ax = fig.add_subplot(G[1,:])
         ax.set_xlabel('particles')
         ax.set_ylabel('$\\log_{2}($relative error$)$')
 
         corr1 = filter_data(data['different_order_correlations'],
-            representation='Q', quantity='N_total', size=10**8)
+            representation='Q', quantity='N_total', size=10**9)
         corrm = filter_data(data['violations'],
-            representation='Q', size=10**8)
+            representation='Q', size=10**9)
 
         ax.plot(corr1['ns'], numpy.log2(corr1['error'] / corr1['ns'] * 2.),
             color=color_dgreen, linestyle='--', dashes=dashes('--'))
-        ax.plot(corrm['ns'][:50], numpy.log2(corrm['error'] / corrm['qms'])[:50],
+        ax.plot(corrm['ns'], numpy.log2(corrm['error'] / corrm['qms'])[:50],
             color=color_dblue)
 
         ref_ns = numpy.arange(1, 36)
-        ax.plot(ref_ns, ref_ns / 2. - 18, linestyle=':', dashes=dashes(':'), linewidth=0.75, color='grey')
+        ax.plot(ref_ns, ref_ns / 2. - 20, linestyle=':', dashes=dashes(':'), linewidth=0.75, color='grey')
 
-        ax.set_xlim((0, 51))
-        ax.set_ylim((-22, 0))
+        ax.set_xlim((0, 61))
+        ax.set_ylim((-24, 0))
         ax.yaxis.set_ticks(range(-20, 1, 5))
 
-        xs = numpy.linspace(18, 23)
-        ax.plot(xs, [-15] * xs.size, color=color_dgreen, linestyle='--', dashes=dashes('--'))
-        ax.plot(xs, [-17.5] * xs.size, color=color_dblue)
-        ax.text(25, -15.5, "Single order", fontsize=P_GLOBAL['font.size']-1)
-        ax.text(25, -18.5, "Max order ($F\\,$)", fontsize=P_GLOBAL['font.size']-1)
+        xs = numpy.linspace(26, 31)
+        ax.plot(xs, [-16] * xs.size, color=color_dgreen, linestyle='--', dashes=dashes('--'))
+        ax.plot(xs, [-18.5] * xs.size, color=color_dblue)
+        ax.text(33, -16.5, "Single order", fontsize=P_GLOBAL['font.size']-1)
+        ax.text(33, -19.5, "Max order ($F\\,$)", fontsize=P_GLOBAL['font.size']-1)
 
-        xs = numpy.linspace(2, 7)
+        xs = numpy.linspace(2, 6)
         ax.plot(xs, [-5] * xs.size, color='grey', linestyle=':', dashes=dashes(':'), linewidth=0.75)
-        ax.text(7, -6.5, "Reference\n($\\propto 2^{M/2}$)", fontsize=P_GLOBAL['font.size']-1)
+        ax.text(7, -7.5, "Reference\n($\\propto 2^{M/2}$)", fontsize=P_GLOBAL['font.size']-1)
 
 
         for i in (0, 1):
