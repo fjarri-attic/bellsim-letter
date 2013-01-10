@@ -10,8 +10,6 @@ from matplotlib.ticker import NullFormatter
 import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
-FIG_EXT = 'eps'
-
 n = 255.0
 cm_custom = LinearSegmentedColormap.from_list(
     "riedel",
@@ -40,15 +38,15 @@ P_GLOBAL = {
     # main parameters
     'font.family': 'sans-serif',
     'font.sans-serif': ['Helvetica'],
-    'font.size': 6,
+    'font.size': 9,
     'lines.linewidth': 1,
     'lines.dash_capstyle': 'round',
 
     # axes
-    'axes.labelsize': 6,
+    'axes.labelsize': 8,
     'axes.linewidth': 0.5,
-    'xtick.labelsize': 6,
-    'ytick.labelsize': 6,
+    'xtick.labelsize': 7,
+    'ytick.labelsize': 7,
     'xtick.major.pad': 3,
     'xtick.minor.pad': 3,
     'ytick.major.pad': 3,
@@ -61,10 +59,10 @@ P_GLOBAL = {
 }
 
 P_INSET = {
-    'font.size': 6,
-    'xtick.labelsize': 5,
-    'ytick.labelsize': 5,
-    'axes.labelsize': 5,
+    'font.size': 7,
+    'xtick.labelsize': 6,
+    'ytick.labelsize': 6,
+    'axes.labelsize': 6,
     'lines.linewidth': 0.5,
     'xtick.major.size': 2,
     'ytick.major.size': 2,
@@ -108,7 +106,7 @@ class inset:
 class figsize:
 
     def __init__(self, columns, aspect):
-        column_width_inches = 89 / 25.4 # 89 mm
+        column_width_inches = 2.3
 
         fig_width = column_width_inches * columns
         fig_height = fig_width * aspect # height in inches
@@ -155,9 +153,8 @@ def buildGHZDistributions():
     X = (q2_edges[0][1:] + q2_edges[0][:-1]) / 2
     Y = (q2_edges[1][1:] + q2_edges[1][:-1]) / 2
     g1, g2 = numpy.meshgrid(X, Y)
-
-    #print (q2 * (-g1 + g2)).sum() / q2.sum()
-    #exit(0)
+    print (q2 * (-g1 + g2)).sum() / q2.sum()
+    exit(0)
 
     # Adjust data to get rid of "seam" in the middle of the vertical wall
     for i in xrange(q1.shape[0]):
@@ -179,7 +176,7 @@ def buildGHZDistributions():
         dict(data=q2, edges=p2_edges, zmax=3.5, single=False, Q=True)
     ]
 
-    with figsize(1, 0.8) as fig:
+    with figsize(2, 0.8) as fig:
         for i, corr in enumerate(corrs):
             ax = fig.add_subplot(2, 2, i + 1, projection='3d')
             ax.view_init(elev=40., azim=245.)
@@ -204,7 +201,7 @@ def buildGHZDistributions():
             representation = 'Q' if corr['Q'] else 'pos-P'
             ax.set_zlabel('\n\nprobability ($\\times 10^{-2}$)')
             fig.text(0.2 + 0.5 * (i % 2), 0.93 - 0.48 * (i / 2),
-                "SU(2)-Q" if corr['Q'] else 'positive-P', fontsize=P_GLOBAL['font.size'])
+                "SU(2)-Q" if corr['Q'] else 'positive-P', fontsize=P_GLOBAL['font.size']-1)
 
             if corr['single']:
                 ax.set_xlabel('\n\n$\\mathrm{Re}\,\\sigma_1^x$')
@@ -235,12 +232,12 @@ def buildGHZDistributions():
             #ax.w_xaxis.set_rotate_label(False)
             #ax.w_yaxis.set_rotate_label(False)
 
-            fig.text(0.1 + 0.5 * (i % 2), 0.93 - 0.48 * (i / 2), ('a', 'b', 'c', 'd')[i],
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            fig.text(0.1 + 0.5 * (i % 2), 0.93 - 0.48 * (i / 2), ('A', 'B', 'C', 'D')[i],
+                fontsize=P_GLOBAL['font.size'] + 1, fontweight='bold')
 
 
         fig.tight_layout(pad=1.3)
-        fig.savefig('figures/ghz_distributions.' + FIG_EXT)
+        fig.savefig('figures/ghz_distributions.eps')
 
 
 def buildCooperative():
@@ -276,9 +273,9 @@ def buildCooperative():
     with open('data/cooperative-N2-J2-25.json') as f:
         n2 = json.load(f)
 
-    with figsize(1, 0.3) as fig:
+    with figsize(1, 1.2) as fig:
         for i, n in enumerate([n1, n2]):
-            ax = fig.add_subplot(1, 2, i + 1)
+            ax = fig.add_subplot(2, 1, i + 1)
 
             thetas_scaled = numpy.array(n['thetas'])
             deltas = numpy.array(n['deltas_mean'])
@@ -301,11 +298,24 @@ def buildCooperative():
             ax.set_xlabel("$\\theta" + ("\\sqrt{2}" if i == 1 else "") + "$ (rad)")
             ax.set_ylabel("Violation")
 
-            fig.text(0.01 if i == 0 else 0.5, 0.9, 'a' if i == 0 else 'b',
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            fig.text(0.01, 0.95 - 0.48 * i, 'A' if i == 0 else 'B',
+                fontsize=P_GLOBAL['font.size'] + 1, fontweight='bold')
 
-        fig.tight_layout(pad=0.7)
-        fig.savefig('figures/cooperative.' + FIG_EXT)
+            ax.text(0.02, 0.25 + 0.1 * i,
+                ("1 pair" if i == 0 else "2 pairs") +
+                ",\n$2^{" + str(21 if i == 0 else 25) + "}$ samples",
+                fontsize=P_GLOBAL['font.size']-1)
+
+            xs = numpy.linspace(0.2, 0.25)
+            ax.plot(xs, [0.1] * xs.size, "k--", dashes=dashes('--'))
+            ax.fill_between(xs, [-0.02] * xs.size, [0.03] * xs.size,
+                facecolor=color_lblue, interpolate=True, color=color_dblue, linewidth=0.3)
+            ax.text(0.27, 0.08, "QM prediction", fontsize=P_GLOBAL['font.size']-1)
+            ax.text(0.27, -0.01, "pos-P sampling", fontsize=P_GLOBAL['font.size']-1)
+
+
+        fig.tight_layout(pad=0.3)
+        fig.savefig('figures/cooperative.eps')
 
 
 def buildGHZCorrelations():
@@ -355,15 +365,15 @@ def buildGHZCorrelations():
     with open('data/ghz_sampling.json') as f:
         data = json.load(f)
 
-    with figsize(1, 0.3) as fig:
+    with figsize(1, 1.2) as fig:
 
-        G = matplotlib.gridspec.GridSpec(1, 4)
+        G = matplotlib.gridspec.GridSpec(2, 2)
 
         ax1 = fig.add_subplot(G[0,0])
         ax2 = fig.add_subplot(G[0,1])
 
         ax1.set_xlabel('particles', color='white') # need it to make matplotlib create proper spacing
-        fig.text(0.27, 0.06, 'particles', fontsize=P_GLOBAL['axes.labelsize'])
+        fig.text(0.5, 0.52, 'particles', fontsize=P_GLOBAL['axes.labelsize'])
         ax1.set_ylabel('$\\langle F \\rangle / \\langle F \\rangle_{\\mathrm{QM}}$')
 
         representation = 'Q'
@@ -384,18 +394,15 @@ def buildGHZCorrelations():
         ax2.set_ylim((-0.05, 1.6))
 
         for ax in (ax1, ax2):
-            ax.plot(cl_ns, numpy.ones(60), color='grey', linewidth=0.5,
+            ax.plot(cl_ns, numpy.ones(60), color='grey', linewidth=0.75,
                 linestyle='--', dashes=dashes('--'))
-            ax.errorbar(ns, mean, yerr=err, color=color_dblue, linestyle='None',
-                capsize=1)
+            ax.errorbar(ns, mean, yerr=err, color=color_dblue, linestyle='None')
             ax.plot(cl_ns, cl_qm, color=color_dred, linestyle='-.', dashes=dashes('-.'))
 
         # hide the spines between ax and ax2
         ax1.spines['right'].set_visible(False)
         ax2.spines['left'].set_visible(False)
         ax2.yaxis.tick_right()
-        ax1.xaxis.set_ticks([1, 5, 10])
-        ax2.xaxis.set_ticks([50, 55, 60])
         ax2.tick_params(labelright='off') # don't put tick labels at the right side
         ax1.yaxis.tick_left()
 
@@ -412,11 +419,19 @@ def buildGHZCorrelations():
         ax1.plot((1-d,1+d),(1-d,1+d), **kwargs)
         ax1.plot((1-d,1+d),(-d,+d), **kwargs)
 
-        fig.subplots_adjust(wspace=0.001)
+        xs = numpy.linspace(8.5, 10.5)
+        ax1.plot(xs, [0.2] * xs.size, color=color_dred, linestyle='-.', dashes=dashes('-.'))
+        ax1.plot(xs, [0.4] * xs.size, color='grey', linewidth=0.75,
+                linestyle='--', dashes=dashes('--'))
+        ax1.errorbar([9], [0.6], yerr=[0.05], color=color_dblue, linestyle='None')
 
-        ax = fig.add_subplot(G[0,2:])
+        ax2.text(49.5, 0.55, "SU(2)-Q", fontsize=P_GLOBAL['font.size']-1)
+        ax2.text(49.5, 0.35, "QM", fontsize=P_GLOBAL['font.size']-1)
+        ax2.text(49.5, 0.15, "LHV", fontsize=P_GLOBAL['font.size']-1)
+
+        ax = fig.add_subplot(G[1,:])
         ax.set_xlabel('particles')
-        ax.set_ylabel('$\\log_{2}($rel. error$)$')
+        ax.set_ylabel('$\\log_{2}($relative error$)$')
 
         corr1 = filter_data(data['different_order_correlations'],
             representation='Q', quantity='N_total', size=10**9)
@@ -435,20 +450,24 @@ def buildGHZCorrelations():
         ax.set_ylim((-24, 0))
         ax.yaxis.set_ticks(range(-20, 1, 5))
 
+        xs = numpy.linspace(26, 31)
+        ax.plot(xs, [-16] * xs.size, color=color_dgreen, linestyle='--', dashes=dashes('--'))
+        ax.plot(xs, [-18.5] * xs.size, color=color_dblue)
+        ax.text(33, -16.5, "Single order", fontsize=P_GLOBAL['font.size']-1)
+        ax.text(33, -19.5, "Max order ($F\\,$)", fontsize=P_GLOBAL['font.size']-1)
+
+        xs = numpy.linspace(2, 6)
+        ax.plot(xs, [-5] * xs.size, color='grey', linestyle=':', dashes=dashes(':'), linewidth=0.75)
+        ax.text(7, -7.5, "Reference\n($\\propto 2^{M/2}$)", fontsize=P_GLOBAL['font.size']-1)
+
+
         for i in (0, 1):
-            fig.text(0.03 if i == 0 else 0.52, 0.9, 'a' if i == 0 else 'b',
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            fig.text(0.01, 0.95 - 0.48 * i, 'A' if i == 0 else 'B',
+                fontsize=P_GLOBAL['font.size'] + 1, fontweight='bold')
 
-        fig.tight_layout(pad=0.7)
+        fig.tight_layout(pad=0.3)
 
-        p1 = ax1.get_position()
-        p2 = ax2.get_position()
-
-        dwidth = (p2.x0 - p1.x0 - p1.width) / 2. - 0.01
-        ax1.set_position([p1.x0, p1.y0, p1.width + dwidth, p1.height])
-        ax2.set_position([p2.x0 - dwidth, p2.y0, p2.width + dwidth, p2.height])
-
-        fig.savefig('figures/ghz_correlations.' + FIG_EXT)
+        fig.savefig('figures/ghz_correlations.eps')
 
 
 def buildGHZDecoherence():
@@ -469,7 +488,7 @@ def buildGHZDecoherence():
     colors = {2: color_dblue, 3: color_dred, 4: color_dgreen, 6: color_dyellow}
     ndashes = {2: '-', 3: '--', 4: '-.', 6: ':'}
 
-    with figsize(0.5, 1 / 1.6) as fig:
+    with figsize(1, 1 / 1.6) as fig:
         ax = fig.add_subplot(1, 1, 1)
 
         for i, n in enumerate(ns):
@@ -488,10 +507,10 @@ def buildGHZDecoherence():
 
             ax.plot(time, mean, color=colors[n], linestyle=ndashes[n], dashes=dashes(ndashes[n]))
 
-            #xs = numpy.linspace(48, 60)
-            #ax.plot(xs, [0.9 - i * 0.12] * xs.size, color=colors[n],
-            #    linestyle=ndashes[n], dashes=dashes(ndashes[n]))
-            #ax.text(63, 0.87 - i * 0.12, str(n) + " particles", fontsize=P_GLOBAL['font.size']-1)
+            xs = numpy.linspace(48, 60)
+            ax.plot(xs, [0.9 - i * 0.12] * xs.size, color=colors[n],
+                linestyle=ndashes[n], dashes=dashes(ndashes[n]))
+            ax.text(63, 0.87 - i * 0.12, str(n) + " particles", fontsize=P_GLOBAL['font.size']-1)
 
 
         ax.set_xlim(0, 100)
@@ -500,14 +519,14 @@ def buildGHZDecoherence():
         ax.set_ylabel('$F(\\tau)/F(0)$')
 
         fig.tight_layout(pad=0.3)
-        fig.savefig('figures/ghz_decoherence.' + FIG_EXT)
+        fig.savefig('figures/ghz_decoherence.eps')
 
 
 
 if __name__ == '__main__':
 
     with plot_params(**P_GLOBAL):
-        #buildGHZDistributions()
-        buildCooperative()
-        buildGHZCorrelations()
-        buildGHZDecoherence()
+        buildGHZDistributions()
+        #buildCooperative()
+        #buildGHZCorrelations()
+        #buildGHZDecoherence()
