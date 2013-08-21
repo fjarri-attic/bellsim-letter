@@ -301,15 +301,15 @@ __device__ ${s_ctype} get_sigma${number}${axis}(${c_ctype} *sample)
 }
 %endfor
 
-%for axis in ('x', 'y'):
-__device__ ${s_ctype} get_sigma12${axis}(${c_ctype} *sample)
+%for axes in (('x', 'x'), ('y', 'y'), ('x', 'y'), ('y', 'x')):
+__device__ ${s_ctype} get_sigma1${axes[0]}2${axes[1]}(${c_ctype} *sample)
 {
     ${insertComplexSigmas()}
 
     %if representation == 'Q':
-    return sigma_${axis}[0] * sigma_${axis}[1];
+    return sigma_${axes[0]}[0] * sigma_${axes[1]}[1];
     %else:
-    return (sigma_${axis}[0] * sigma_${axis}[1]).x;
+    return (sigma_${axes[0]}[0] * sigma_${axes[1]}[1]).x;
     %endif
 }
 %endfor

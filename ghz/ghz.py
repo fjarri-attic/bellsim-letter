@@ -281,11 +281,11 @@ def collect_binning():
     """Bin distributions for the parts of 2-particle Bell inequality."""
 
     binning = [
-            (['sigma1x', 'sigma2x'], 60, [(-3.5, 3.5), (-3.5, 3.5)]),
-            (['sigma12x', 'sigma12y'], 60, [(-8.5, 6.5), (-6.5, 8.5)]),
+            (['sigma1x', 'sigma2y'], 60, [(-3.5, 3.5), (-3.5, 3.5)]),
+            (['sigma1x2y', 'sigma1y2x'], 60, [(-8.5, 6.5), (-6.5, 8.5)]),
         ]
 
-    results = get_quantities(10 ** 5, 10 ** 2, 2, 'ardehali', 'Q', [],
+    results = get_quantities(10 ** 6, 10 ** 2, 2, 'ardehali', 'Q', [],
         binning=binning)
 
     with open('ghz_binning_ardehali_2p_Q.pickle', 'w') as f:
