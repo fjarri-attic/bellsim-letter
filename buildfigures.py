@@ -40,15 +40,15 @@ P_GLOBAL = {
     # main parameters
     'font.family': 'sans-serif',
     'font.sans-serif': ['Helvetica'],
-    'font.size': 6,
+    'font.size': 7,
     'lines.linewidth': 1,
     'lines.dash_capstyle': 'round',
 
     # axes
-    'axes.labelsize': 6,
+    'axes.labelsize': 7,
     'axes.linewidth': 0.5,
-    'xtick.labelsize': 6,
-    'ytick.labelsize': 6,
+    'xtick.labelsize': 7,
+    'ytick.labelsize': 7,
     'xtick.major.pad': 3,
     'xtick.minor.pad': 3,
     'ytick.major.pad': 3,
@@ -62,9 +62,9 @@ P_GLOBAL = {
 
 P_INSET = {
     'font.size': 6,
-    'xtick.labelsize': 5,
-    'ytick.labelsize': 5,
-    'axes.labelsize': 5,
+    'xtick.labelsize': 6,
+    'ytick.labelsize': 6,
+    'axes.labelsize': 6,
     'lines.linewidth': 0.5,
     'xtick.major.size': 2,
     'ytick.major.size': 2,
@@ -108,7 +108,7 @@ class inset:
 class figsize:
 
     def __init__(self, columns, aspect):
-        column_width_inches = 89 / 25.4 # 89 mm
+        column_width_inches = 85 / 25.4 # 85 mm
 
         fig_width = column_width_inches * columns
         fig_height = fig_width * aspect # height in inches
@@ -235,8 +235,8 @@ def buildGHZDistributions():
             #ax.w_xaxis.set_rotate_label(False)
             #ax.w_yaxis.set_rotate_label(False)
 
-            fig.text(0.1 + 0.5 * (i % 2), 0.93 - 0.48 * (i / 2), ('a', 'b', 'c', 'd')[i],
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            fig.text(0.1 + 0.5 * (i % 2), 0.93 - 0.48 * (i / 2), ('(a)', '(b)', '(c)', '(d)')[i],
+                fontsize=P_GLOBAL['font.size'] + 2)
 
 
         fig.tight_layout(pad=1.3)
@@ -276,9 +276,9 @@ def buildCooperative():
     with open('data/cooperative-N2-J2-25.json') as f:
         n2 = json.load(f)
 
-    with figsize(1, 0.3) as fig:
+    with figsize(0.75, 1) as fig:
         for i, n in enumerate([n1, n2]):
-            ax = fig.add_subplot(1, 2, i + 1)
+            ax = fig.add_subplot(2, 1, i + 1)
 
             thetas_scaled = numpy.array(n['thetas'])
             deltas = numpy.array(n['deltas_mean'])
@@ -301,8 +301,10 @@ def buildCooperative():
             ax.set_xlabel("$\\theta" + ("\\sqrt{2}" if i == 1 else "") + "$ (rad)")
             ax.set_ylabel("Violation")
 
-            fig.text(0.01 if i == 0 else 0.5, 0.9, 'a' if i == 0 else 'b',
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            #fig.text(0.01 if i == 0 else 0.5, 0.9, 'a' if i == 0 else 'b',
+            #    fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+            ax.text(0.02, 0.35 if i == 0 else 0.43, '(a)' if i == 0 else '(b)',
+                fontsize=P_GLOBAL['font.size'] + 2)
 
         fig.tight_layout(pad=0.7)
         fig.savefig('figures/cooperative.' + FIG_EXT)
@@ -355,15 +357,15 @@ def buildGHZCorrelations():
     with open('data/ghz_sampling.json') as f:
         data = json.load(f)
 
-    with figsize(1, 0.3) as fig:
+    with figsize(0.75, 1) as fig:
 
-        G = matplotlib.gridspec.GridSpec(1, 4)
+        G = matplotlib.gridspec.GridSpec(2, 2)
 
         ax1 = fig.add_subplot(G[0,0])
         ax2 = fig.add_subplot(G[0,1])
 
         ax1.set_xlabel('particles', color='white') # need it to make matplotlib create proper spacing
-        fig.text(0.27, 0.06, 'particles', fontsize=P_GLOBAL['axes.labelsize'])
+        fig.text(0.51, 0.52, 'particles', fontsize=P_GLOBAL['axes.labelsize'])
         ax1.set_ylabel('$\\langle F \\rangle / \\langle F \\rangle_{\\mathrm{QM}}$')
 
         representation = 'Q'
@@ -387,7 +389,7 @@ def buildGHZCorrelations():
             ax.plot(cl_ns, numpy.ones(60), color='grey', linewidth=0.5,
                 linestyle='--', dashes=dashes('--'))
             ax.errorbar(ns, mean, yerr=err, color=color_dblue, linestyle='None',
-                capsize=1)
+                capsize=1.5)
             ax.plot(cl_ns, cl_qm, color=color_dred, linestyle='-.', dashes=dashes('-.'))
 
         # hide the spines between ax and ax2
@@ -411,10 +413,11 @@ def buildGHZCorrelations():
             linewidth=P_GLOBAL['axes.linewidth'])  # switch to the bottom axes
         ax1.plot((1-d,1+d),(1-d,1+d), **kwargs)
         ax1.plot((1-d,1+d),(-d,+d), **kwargs)
+        ax1.text(1, 1.25, '(a)', fontsize=P_GLOBAL['font.size'] + 2)
 
         fig.subplots_adjust(wspace=0.001)
 
-        ax = fig.add_subplot(G[0,2:])
+        ax = fig.add_subplot(G[1,:])
         ax.set_xlabel('particles')
         ax.set_ylabel('$\\log_{2}($rel. error$)$')
 
@@ -435,9 +438,10 @@ def buildGHZCorrelations():
         ax.set_ylim((-24, 0))
         ax.yaxis.set_ticks(range(-20, 1, 5))
 
-        for i in (0, 1):
-            fig.text(0.03 if i == 0 else 0.52, 0.9, 'a' if i == 0 else 'b',
-                fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+        #for i in (0, 1):
+        #    fig.text(0.03 if i == 0 else 0.52, 0.9, 'a' if i == 0 else 'b',
+        #        fontsize=P_GLOBAL['font.size'] + 2, fontweight='bold')
+        ax.text(3, -6, '(b)', fontsize=P_GLOBAL['font.size'] + 2)
 
         fig.tight_layout(pad=0.7)
 
@@ -469,7 +473,7 @@ def buildGHZDecoherence():
     colors = {2: color_dblue, 3: color_dred, 4: color_dgreen, 6: color_dyellow}
     ndashes = {2: '-', 3: '--', 4: '-.', 6: ':'}
 
-    with figsize(0.5, 1 / 1.6) as fig:
+    with figsize(0.75, 1 / 1.6) as fig:
         ax = fig.add_subplot(1, 1, 1)
 
         for i, n in enumerate(ns):
@@ -507,7 +511,9 @@ def buildGHZDecoherence():
 if __name__ == '__main__':
 
     with plot_params(**P_GLOBAL):
-        #buildGHZDistributions()
+        distr_params = {'xtick.labelsize': 6, 'ytick.labelsize': 6}
+        with plot_params(**distr_params):
+            buildGHZDistributions()
         buildCooperative()
         buildGHZCorrelations()
         buildGHZDecoherence()
